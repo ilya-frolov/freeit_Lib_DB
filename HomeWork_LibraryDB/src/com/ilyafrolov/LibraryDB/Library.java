@@ -4,10 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class Library {
 
@@ -19,34 +16,42 @@ public class Library {
     public Map<String, ArrayList<Book>> getLibrary() {
         try {
             ResultSet rs = ConnectionToDB.postman.executeQuery("select * from books");
-//        Map<String, ArrayList<Book>> books = new TreeMap();
-
             while (rs.next()) {
+                /*I get 'id' from DB and give to Book constructor. Is it right?*/
                 Book book = new Book(rs.getInt(1), rs.getString(2),
-                        Author.getAuthorByID(3),
-                        Genre.getGenreByID(4));
-                ArrayList<Book> list = new ArrayList();
-                list.add(book);
-                books.put(book.getTitle(), list);
+                        Author.getAuthorByID(rs.getInt(3)), Genre.getGenreByID(rs.getInt(4)));
+
+                if (books.containsKey(book.getTitle())) {
+                    books.get(book.getTitle()).add(book);
+                } else {
+                    ArrayList<Book> list = new ArrayList();
+                    list.add(book);
+                    books.put(book.getTitle(), list);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            return books; //Create toString()
+            return books;
         }
     }
 
-    public void addBook(Book book) {
+    public void addBook(String title, String author, String genre) {
         try {
-            if (books.containsKey(book.getTitle())) {
-                books.get(book.getTitle()).add(book);
-            } else {
-                ArrayList<Book> list = new ArrayList();
-                list.add(book);
-                books.put(book.getTitle(), list);
-            }
+//            if (books.containsKey(book.getTitle())) {
+//                books.get(book.getTitle()).add(book);
+//            } else {
+//                ArrayList<Book> list = new ArrayList();
+//                list.add(book);
+//                books.put(book.getTitle(), list);
+//            }
+            Book book = new Book();
+            book.setTitle(title);//Add verification if such title is already exist
+            book.setAuthor(new Author(author));//Add verification if such author is already exist
+            book.setGenre(new Genre(genre));//Add verification if such genre is already exist
+
             PreparedStatement ps = ConnectionToDB.con.prepareStatement("insert into books (title, author_id, genre_id) values (?, ?, ?)");
-            ps.setString(2, book.getTitle());
+            ps.setString(1, book.getTitle());
 
             PreparedStatement psAuthor = ConnectionToDB.con.prepareStatement("insert into authors (name) values (?)", Statement.RETURN_GENERATED_KEYS);
             psAuthor.setString(1, book.getAuthor().getAuthor());
@@ -55,8 +60,7 @@ public class Library {
             if (resSetAuthor.next()) {
                 book.getAuthor().setId(resSetAuthor.getInt(1));
             }
-            ps.setInt(3, book.getAuthor().getId());
-            ps.executeUpdate();
+            ps.setInt(2, book.getAuthor().getId());
 
             PreparedStatement psGenre = ConnectionToDB.con.prepareStatement("insert into genres (name) values (?)", Statement.RETURN_GENERATED_KEYS);
             psGenre.setString(1, book.getGenre().getGenre());
@@ -65,7 +69,7 @@ public class Library {
             if (resSetGenre.next()) {
                 book.getGenre().setId(resSetGenre.getInt(1));
             }
-            ps.setInt(4, book.getGenre().getId());
+            ps.setInt(3, book.getGenre().getId());
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -73,35 +77,79 @@ public class Library {
     }
 
     //    public Book getBook(int id) {
-    public void findBook(int id) { //add Exception if id does not consist
-        for (ArrayList<Book> list : books.values()) {
-            for (int i = 0; i < list.size(); i++) {
-                if (list.get(i).getId() == id) {
-                    System.out.println(list.get(i));
+//    public void findBook(int id) { //add Exception if id does not consist
+//        for (ArrayList<Book> list : books.values()) {
+//            for (int i = 0; i < list.size(); i++) {
+//                if (list.get(i).getId() == id) {
+//                    System.out.println(list.get(i));
+//                }
+//            }
+//        }
+//    }
+//
+//    public void findBook(String title) {
+//        if (books.containsKey(title)) {
+//            System.out.println(books.get(title));
+//        }
+//    }
+
+    public void editBook(int id, String newTitle, String newAuthor, String newGenre) { //add Exception if id does not consist
+        try {
+            PreparedStatement ps = ConnectionToDB.con.prepareStatement("update books set title = ?, author_id = ?, genre_id = ? where id = ?");
+
+            ps.setString(1, newTitle);
+
+            for (ArrayList<Book> list : books.values()) {
+                for (int i = 0; i < list.size(); i++) {
+                    if (list.get(i).getAuthor().getAuthor().equals(newAuthor)) {
+                        ps.setInt(2, list.get(i).getAuthor().getId());
+                    } else {
+                        PreparedStatement psAuthor = ConnectionToDB.con.prepareStatement("insert into authors (name) values (?)", Statement.RETURN_GENERATED_KEYS);
+                        psAuthor.setString(1, newAuthor);
+                        psAuthor.executeUpdate();
+                        ResultSet resSetAuthor = psAuthor.getGeneratedKeys();
+                        Book book = new Book();
+                        if (resSetAuthor.next()) {
+                            for (ArrayList<Book> list2 : books.values()) {
+                                for (int j = 0; j < list2.size(); j++) {
+                                    if (list2.get(j).getId() == id) {
+                                        book = list2.get(j);
+                                        book.getAuthor().setId(resSetAuthor.getInt(1));
+                                    }
+                                }
+                            }
+                        }
+                        ps.setInt(2, book.getAuthor().getId());
+                    }
+
+                    if (list.get(i).getGenre().getGenre().equals(newGenre)) {
+                        ps.setInt(3, list.get(i).getGenre().getId());
+                    } else {
+                        PreparedStatement psGenre = ConnectionToDB.con.prepareStatement("insert into genres (name) values (?)", Statement.RETURN_GENERATED_KEYS);
+                        psGenre.setString(1, newGenre);
+                        psGenre.executeUpdate();
+                        ResultSet resSetGenre = psGenre.getGeneratedKeys();
+                        Book book = new Book();
+                        if (resSetGenre.next()) {
+                            for (ArrayList<Book> list2 : books.values()) {
+                                for (int j = 0; j < list2.size(); j++) {
+                                    if (list2.get(j).getId() == id) {
+                                        book = list2.get(j);
+                                        book.getGenre().setId(resSetGenre.getInt(1));
+                                    }
+                                }
+                            }
+                        }
+                        ps.setInt(3, book.getGenre().getId());
+                    }
                 }
             }
-        }
-    }
 
-    public void findBook(String title) {
-        if (books.containsKey(title)) {
-            System.out.println(books.get(title));
+            ps.setInt(4, id);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    }
-
-    public Book editBook(int id, Book book) { //add Exception if id does not consist
-        Book newBook = new Book();
-        for (ArrayList<Book> list : books.values()) {
-            for (int i = 0; i < list.size(); i++) {
-                if (list.get(i).getId() == id) {
-                    list.get(i).setTitle(book.getTitle());
-                    list.get(i).setAuthor(book.getAuthor());
-                    list.get(i).setGenre(book.getGenre());
-                    newBook = list.get(i);
-                }
-            }
-        }
-        return newBook;
     }
 
     public void deleteBook(int id) {
@@ -120,16 +168,16 @@ public class Library {
         }
     }
 
-//    @Override
-//    public String toString(){
-//        return
-//    }
-
-        public void printListOfBooks () {
-            Iterator<ArrayList<Book>> iterator = books.values().iterator();
-            while (iterator.hasNext()) {
-                System.out.println(iterator.next());
-            }
-        }
-
+    @Override
+    public String toString() {
+        return books.values().toString();
     }
+
+    public void printListOfBooks() {
+        Iterator<ArrayList<Book>> iterator = books.values().iterator();
+        while (iterator.hasNext()) {
+            System.out.println(iterator.next());
+        }
+    }
+
+}

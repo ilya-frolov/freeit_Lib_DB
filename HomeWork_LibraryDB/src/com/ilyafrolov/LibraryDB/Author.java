@@ -17,6 +17,10 @@ public class Author {
         this.author = author;
     }
 
+    public Author(String author) {
+        this.author = author;
+    }
+
     public int getId() {
         return id;
     }
@@ -35,7 +39,7 @@ public class Author {
 
     public static Author getAuthorByID(int id) throws SQLException {
         PreparedStatement ps = ConnectionToDB.con.prepareStatement("select * from authors where id = ?");
-        ps.setInt(1,id);
+        ps.setInt(1, id);
         ResultSet rs = ps.executeQuery();
         rs.next();
         return new Author(rs.getInt(1), rs.getString(2));
