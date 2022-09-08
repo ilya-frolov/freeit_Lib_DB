@@ -8,10 +8,14 @@ public class Runner {
         Library lib = new Library();
         lib.getLibrary();
         lib.printListOfBooks();
-        lib.addBook("Java", "Blinov", "horror");
+        lib.addBook("Riviera", "S. Hokking", "fantasy");
         lib.getLibrary();
         lib.printListOfBooks();
-        lib.editBook(11, "Java programming", "Ivanov", "fairy tales");
+        lib.editBook(3, "Harry Potter 2", "Ivanov", "detective");
+        lib.getLibrary();
+        lib.printListOfBooks();
+        lib.deleteBook(24);
+        lib.deleteBook(25);
         lib.getLibrary();
         lib.printListOfBooks();
     }

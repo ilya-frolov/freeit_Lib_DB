@@ -110,58 +110,83 @@ public class Library {
 
     public void editBook(int id, String newTitle, String newAuthor, String newGenre) { //add Exception if id does not consist
         try {
-            PreparedStatement ps = ConnectionToDB.con.prepareStatement("update books set title = ?, author_id = ?, genre_id = ? where id = ?");
-
-            ps.setString(1, newTitle);
-
+            boolean idExist = false;
             for (ArrayList<Book> list : books.values()) {
                 for (int i = 0; i < list.size(); i++) {
-                    if (list.get(i).getAuthor().getAuthor().equals(newAuthor)) {
-                        ps.setInt(2, list.get(i).getAuthor().getId());
-                    } else {
-                        PreparedStatement psAuthor = ConnectionToDB.con.prepareStatement("insert into authors (name) values (?)", Statement.RETURN_GENERATED_KEYS);
-                        psAuthor.setString(1, newAuthor);
-                        psAuthor.executeUpdate();
-                        ResultSet resSetAuthor = psAuthor.getGeneratedKeys();
-                        Book book = new Book();
-                        if (resSetAuthor.next()) {
-                            for (ArrayList<Book> list2 : books.values()) {
-                                for (int j = 0; j < list2.size(); j++) {
-                                    if (list2.get(j).getId() == id) {
-                                        book = list2.get(j);
-                                        book.getAuthor().setId(resSetAuthor.getInt(1));
-                                    }
-                                }
-                            }
-                        }
-                        ps.setInt(2, book.getAuthor().getId());
-                    }
-
-                    if (list.get(i).getGenre().getGenre().equals(newGenre)) {
-                        ps.setInt(3, list.get(i).getGenre().getId());
-                    } else {
-                        PreparedStatement psGenre = ConnectionToDB.con.prepareStatement("insert into genres (name) values (?)", Statement.RETURN_GENERATED_KEYS);
-                        psGenre.setString(1, newGenre);
-                        psGenre.executeUpdate();
-                        ResultSet resSetGenre = psGenre.getGeneratedKeys();
-                        Book book = new Book();
-                        if (resSetGenre.next()) {
-                            for (ArrayList<Book> list2 : books.values()) {
-                                for (int j = 0; j < list2.size(); j++) {
-                                    if (list2.get(j).getId() == id) {
-                                        book = list2.get(j);
-                                        book.getGenre().setId(resSetGenre.getInt(1));
-                                    }
-                                }
-                            }
-                        }
-                        ps.setInt(3, book.getGenre().getId());
+                    if (list.get(i).getId() == id) {
+                        idExist = true;
                     }
                 }
             }
 
-            ps.setInt(4, id);
-            ps.executeUpdate();
+            if (idExist) {
+                PreparedStatement ps = ConnectionToDB.con.prepareStatement("update books set title = ?, author_id = ?, genre_id = ? where id = ?");
+                ps.setString(1, newTitle);
+
+                boolean authorExist = false;
+                boolean genreExist = false;
+                int authorId = 0;
+                int genreId = 0;
+
+                for (ArrayList<Book> list : books.values()) {
+                    for (int i = 0; i < list.size(); i++) {
+                        if (list.get(i).getAuthor().getAuthor().equals(newAuthor)) {
+                            authorExist = true;
+                            authorId = list.get(i).getAuthor().getId();
+                        }
+                        if (list.get(i).getGenre().getGenre().equals(newGenre)) {
+                            genreExist = true;
+                            genreId = list.get(i).getGenre().getId();
+                        }
+                    }
+                }
+
+                if (authorExist) {
+                    ps.setInt(2, authorId);
+                } else {
+                    PreparedStatement psAuthor = ConnectionToDB.con.prepareStatement("insert into authors (name) values (?)", Statement.RETURN_GENERATED_KEYS);
+                    psAuthor.setString(1, newAuthor);
+                    psAuthor.executeUpdate();
+                    ResultSet resSetAuthor = psAuthor.getGeneratedKeys();
+                    Book book = new Book();
+                    if (resSetAuthor.next()) {
+                        for (ArrayList<Book> list : books.values()) {
+                            for (int i = 0; i < list.size(); i++) {
+                                if (list.get(i).getId() == id) {
+                                    book = list.get(i);
+                                    book.getAuthor().setId(resSetAuthor.getInt(1));
+                                }
+                            }
+                        }
+                    }
+                    ps.setInt(2, book.getAuthor().getId());
+                }
+
+                if (genreExist) {
+                    ps.setInt(3, genreId);
+                } else {
+                    PreparedStatement psGenre = ConnectionToDB.con.prepareStatement("insert into genres (name) values (?)", Statement.RETURN_GENERATED_KEYS);
+                    psGenre.setString(1, newGenre);
+                    psGenre.executeUpdate();
+                    ResultSet resSetGenre = psGenre.getGeneratedKeys();
+                    Book book = new Book();
+                    if (resSetGenre.next()) {
+                        for (ArrayList<Book> list : books.values()) {
+                            for (int j = 0; j < list.size(); j++) {
+                                if (list.get(j).getId() == id) {
+                                    book = list.get(j);
+                                    book.getGenre().setId(resSetGenre.getInt(1));
+                                }
+                            }
+                        }
+                    }
+                    ps.setInt(3, book.getGenre().getId());
+                }
+                ps.setInt(4, id);
+                ps.executeUpdate();
+            } else {
+                System.out.println("The entered id '" + id + "' doesn't exist!");
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
