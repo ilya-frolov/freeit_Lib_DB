@@ -1,24 +1,22 @@
 package com.ilyafrolov.LibraryDB;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.Objects;
 
 public class Author {
 
     private int id;
-    private String author;
+    private String authorName;
 
     public Author() {
     }
 
-    public Author(int id, String author) {
+    public Author(int id, String authorName) {
         this.id = id;
-        this.author = author;
+        this.authorName = authorName;
     }
 
-    public Author(String author) {
-        this.author = author;
+    public Author(String authorName) {
+        this.authorName = authorName;
     }
 
     public int getId() {
@@ -30,24 +28,35 @@ public class Author {
     }
 
     public String getAuthor() {
-        return author;
+        return authorName;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public static Author getAuthorByID(int id) throws SQLException {
-        PreparedStatement ps = ConnectionToDB.con.prepareStatement("select * from authors where id = ?");
-        ps.setInt(1, id);
-        ResultSet rs = ps.executeQuery();
-        rs.next();
-        return new Author(rs.getInt(1), rs.getString(2));
+    public void setAuthor(String authorName) {
+        this.authorName = authorName;
     }
 
     @Override
     public String toString() {
-        return author;
+        return authorName;
     }
 
+    @Override
+    public int hashCode(){
+        int hash = 7;
+        hash = 31 * hash + id;
+        hash = 31 * hash + (authorName == null ? 0 : authorName.hashCode());
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Author author = (Author) o;
+        return id == author.id && Objects.equals(author, author.authorName);
+    }
 }
