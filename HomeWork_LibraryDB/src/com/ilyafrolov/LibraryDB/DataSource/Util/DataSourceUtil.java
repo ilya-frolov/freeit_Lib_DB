@@ -1,4 +1,4 @@
-package com.ilyafrolov.LibraryDB;
+package com.ilyafrolov.LibraryDB.DataSource.Util;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -11,11 +11,12 @@ public class DataSourceUtil implements ConnectionPool {
     private String url;
     private String user;
     private String password;
+
     private List<Connection> connectionPool;
     private List<Connection> usedConnections = new ArrayList<>();
-    private static int INITIAL_POOL_SIZE = 10;
+    private static final int INITIAL_POOL_SIZE = 10;
 
-    public DataSourceUtil(String url, String user, String password, List<Connection> pool) throws SQLException {
+    public DataSourceUtil(String url, String user, String password, List<Connection> pool) {
         this.url = url;
         this.user = user;
         this.password = password;
@@ -38,9 +39,9 @@ public class DataSourceUtil implements ConnectionPool {
     }
 
     @Override
-    public boolean releaseConnection(Connection connection) {
+    public void releaseConnection(Connection connection) {
         connectionPool.add(connection);
-        return usedConnections.remove(connection);
+        usedConnections.remove(connection);
     }
 
     private static Connection createConnection(String url, String user, String password) throws SQLException {

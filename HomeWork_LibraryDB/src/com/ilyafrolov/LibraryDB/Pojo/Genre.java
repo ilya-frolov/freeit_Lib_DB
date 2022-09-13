@@ -1,4 +1,4 @@
-package com.ilyafrolov.LibraryDB;
+package com.ilyafrolov.LibraryDB.Pojo;
 
 import java.util.Objects;
 
