@@ -1,8 +1,4 @@
-package com.ilyafrolov.LibraryDB.DataSource;
-
-import com.ilyafrolov.LibraryDB.DataSource.Impl.AuthorRepositoryImpl;
-import com.ilyafrolov.LibraryDB.DataSource.Impl.BookRepositoryImpl;
-import com.ilyafrolov.LibraryDB.DataSource.Impl.GenreRepositoryImpl;
+package com.ilyafrolov.LibraryDB.database;
 
 public class RepositorySupplier {
     private static BookRepositoryImpl bookRepository = new BookRepositoryImpl();

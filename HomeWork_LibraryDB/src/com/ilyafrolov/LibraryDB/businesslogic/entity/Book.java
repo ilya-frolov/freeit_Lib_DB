@@ -1,4 +1,4 @@
-package com.ilyafrolov.LibraryDB.Pojo;
+package com.ilyafrolov.LibraryDB.businesslogic.entity;
 
 import java.util.Objects;
 
@@ -13,6 +13,11 @@ public class Book {
     public Book() {
     }
 
+    public Book(String title, Author author, Genre genre) {
+        this.title = title;
+        this.author = author;
+        this.genre = genre;
+    }
     public Book(int id, String title, Author author, Genre genre) {
         this.id = id;
         this.title = title;
@@ -66,7 +71,8 @@ public class Book {
         int hash = 7;
         hash = 31 * hash + id;
         hash = 31 * hash + (title == null ? 0 : title.hashCode());
-        hash = 31 * hash + (genre.getGenre() == null ? 0 : genre.getGenre().hashCode());
+        hash = 31 * hash + (author.getName() == null ? 0 : author.getName().hashCode());
+        hash = 31 * hash + (genre.getName() == null ? 0 : genre.getName().hashCode());
         return hash;
     }
 
@@ -79,7 +85,7 @@ public class Book {
             return false;
         }
         Book book = (Book) o;
-        return id == book.id && Objects.equals(title, book.title) && Objects.equals(genre, book.genre);
+        return id == book.id && Objects.equals(title, book.title) && Objects.equals(author, book.author) && Objects.equals(genre, book.genre);
     }
 
 }

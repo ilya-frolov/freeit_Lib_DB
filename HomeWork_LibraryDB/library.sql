@@ -16,16 +16,16 @@
 
 
 -- Dumping database structure for library
-CREATE DATABASE IF NOT EXISTS `library` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+CREATE DATABASE IF NOT EXISTS `library`
 USE `library`;
 
 -- Dumping structure for table library.authors
 CREATE TABLE IF NOT EXISTS `authors` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=200 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+)
 
 -- Data exporting was unselected.
 
@@ -34,24 +34,24 @@ CREATE TABLE IF NOT EXISTS `books` (
   `id` int NOT NULL AUTO_INCREMENT,
   `title` varchar(255) DEFAULT NULL,
   `author_id` int DEFAULT NULL,
-  `genre_id` int NOT NULL,
+  `genre_id` int DEFAULT NULL,
   `ISBN` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `books_a_authors_fk1` (`author_id`) USING BTREE,
   KEY `books_g_genres_fk2` (`genre_id`) USING BTREE,
   CONSTRAINT `books_a_authors_fk1` FOREIGN KEY (`author_id`) REFERENCES `authors` (`id`),
   CONSTRAINT `books_g_genres_fk2` FOREIGN KEY (`genre_id`) REFERENCES `genres` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+)
 
 -- Data exporting was unselected.
 
 -- Dumping structure for table library.genres
 CREATE TABLE IF NOT EXISTS `genres` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `name` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=160 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+)
 
 -- Data exporting was unselected.
 

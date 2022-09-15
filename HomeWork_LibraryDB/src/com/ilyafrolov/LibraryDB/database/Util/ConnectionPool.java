@@ -1,4 +1,4 @@
-package com.ilyafrolov.LibraryDB.DataSource.Util;
+package com.ilyafrolov.LibraryDB.database.Util;
 
 import java.sql.Connection;
 

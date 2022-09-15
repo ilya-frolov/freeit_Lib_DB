@@ -1,4 +1,4 @@
-package com.ilyafrolov.LibraryDB.Pojo;
+package com.ilyafrolov.LibraryDB.businesslogic.entity;
 
 import java.util.Objects;
 
@@ -27,11 +27,11 @@ public class Genre {
         this.id = id;
     }
 
-    public String getGenre() {
+    public String getName() {
         return genreName;
     }
 
-    public void setGenre(String genreName) {
+    public void setName(String genreName) {
         this.genreName = genreName;
     }
 

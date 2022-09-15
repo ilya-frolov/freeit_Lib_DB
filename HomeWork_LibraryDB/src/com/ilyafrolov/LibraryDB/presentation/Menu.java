@@ -1,6 +1,9 @@
-package com.ilyafrolov.LibraryDB;
+package com.ilyafrolov.LibraryDB.presentation;
 
-import com.ilyafrolov.LibraryDB.Service.Impl.BookServiceImpl;
+import com.ilyafrolov.LibraryDB.businesslogic.entity.Author;
+import com.ilyafrolov.LibraryDB.businesslogic.entity.Book;
+import com.ilyafrolov.LibraryDB.businesslogic.entity.Genre;
+import com.ilyafrolov.LibraryDB.businesslogic.service.BookServiceImpl;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -32,7 +35,7 @@ public final class Menu {
 
                 switch (input) {
                     case 1:
-                        System.out.println(services.getAllBooks());
+                        System.out.println(services.getAll());
                         break;
                     case 2:
                         System.out.println(INPUT_TITLE);
@@ -47,7 +50,10 @@ public final class Menu {
                         Scanner scanner4 = new Scanner(System.in);
                         String newGenre = scanner4.nextLine();
 
-                        services.addBook(title, newAuthor, newGenre);
+                        Author author = new Author(newAuthor);
+                        Genre genre = new Genre(newGenre);
+                        Book newBook = new Book(title, author, genre);
+                        services.add(newBook);
                         break;
                     case 3:
                         System.out.println(INPUT_ID);
@@ -66,21 +72,24 @@ public final class Menu {
                         Scanner scanner8 = new Scanner(System.in);
                         String newGenre2 = scanner8.nextLine();
 
-                        services.editBook(id, title2, newAuthor2, newGenre2);
+                        Author author2 = new Author(newAuthor2);
+                        Genre genre2 = new Genre(newGenre2);
+                        Book newBook2 = new Book(id, title2, author2, genre2);
+                        services.update(newBook2);
                         break;
                     case 4:
                         System.out.println(INPUT_ID);
                         Scanner scanner9 = new Scanner(System.in);
                         int id2 = scanner9.nextInt();
 
-                        services.deleteBook(id2);
+                        services.delete(id2);
                         break;
                     case 5:
                         System.out.println(INPUT_ID);
                         Scanner scanner10 = new Scanner(System.in);
                         int id3 = scanner10.nextInt();
 
-                        System.out.println(services.findBook(id3));
+                        System.out.println(services.get(id3));
                         break;
                     case 6:
                         action = false;

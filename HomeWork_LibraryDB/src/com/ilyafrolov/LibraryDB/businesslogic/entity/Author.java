@@ -1,4 +1,4 @@
-package com.ilyafrolov.LibraryDB.Pojo;
+package com.ilyafrolov.LibraryDB.businesslogic.entity;
 
 import java.util.Objects;
 
@@ -27,11 +27,11 @@ public class Author {
         this.id = id;
     }
 
-    public String getAuthor() {
+    public String getName() {
         return authorName;
     }
 
-    public void setAuthor(String authorName) {
+    public void setName(String authorName) {
         this.authorName = authorName;
     }
 
