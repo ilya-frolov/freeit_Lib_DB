@@ -14,5 +14,7 @@ public interface BookRepository {
 
     void delete(int id);
 
-    Book get(int id);
+    Book getById(int id);
+
+    Book getByName(String title);
 }

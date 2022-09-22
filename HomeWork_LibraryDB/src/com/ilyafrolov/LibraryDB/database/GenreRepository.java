@@ -6,6 +6,8 @@ public interface GenreRepository {
 
     Genre getByID(int id);
 
-    Genre setInDB(Genre genre);
+    Genre getByName(Genre genre);
+
+    Genre add(Genre genre);
 
 }

@@ -6,6 +6,8 @@ public interface AuthorRepository {
 
     Author getByID(int id);
 
-    Author setInDB(Author author);
+    Author getByName(Author author);
+
+    Author add(Author author);
 
 }
